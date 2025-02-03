@@ -51,7 +51,7 @@ This started as a simplified version of [Google's original React implementation]
 5. For production build:
 
    ```bash
-   yarn build
+   yarn build:win # or build:mac or build:linux
    ```
 
 ## Contributing
