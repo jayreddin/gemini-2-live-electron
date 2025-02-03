@@ -5,8 +5,7 @@
   "author": "Open Source Community",
   "license": "MIT",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --debug"
+    "start": "electron ."
   },
   "dependencies": {
     "electron": "^34.0.2"

@@ -15,11 +15,6 @@ function createWindow () {
 
     // Load the index.html file from the client folder
     mainWindow.loadFile(path.join(__dirname, '../client/index.html'))
-
-    // Open the DevTools in development mode
-    if (process.argv.includes('--debug')) {
-        mainWindow.webContents.openDevTools()
-    }
 }
 
 // This method will be called when Electron has finished
