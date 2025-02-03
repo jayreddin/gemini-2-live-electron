@@ -1,8 +1,8 @@
 # Gemini 2.0 Flash Multimodal Live API Client
 
-A lightweight vanilla JavaScript implementation of the Gemini 2.0 Flash Multimodal Live API client. This project provides real-time interaction with Gemini's API through text, audio, video, and screen sharing capabilities.
+A desktop Electron application implementing the Gemini 2.0 Flash Multimodal Live API client. This project provides real-time interaction with Gemini's API through text, audio, video, and screen sharing capabilities.
 
-This is a simplified version of [Google's original React implementation](https://github.com/google-gemini/multimodal-live-api-web-console), created in response to [this issue](https://github.com/google-gemini/multimodal-live-api-web-console/issues/19).
+This started as a simplified version of [Google's original React implementation](https://github.com/google-gemini/multimodal-live-api-web-console), created in response to [this issue](https://github.com/google-gemini/multimodal-live-api-web-console/issues/19), and has evolved into a desktop application written in Electron.
 
 ## Live Demo on GitHub Pages
 
@@ -16,14 +16,15 @@ This is a simplified version of [Google's original React implementation](https:/
 - Real-time video streaming from the user's webcam
 - Real-time screen sharing from the user's screen
 - Function calling
-- Built with vanilla JavaScript (no dependencies)
-- Mobile-friendly
+- Native desktop application built with Electron
+- Cross-platform support (Windows, macOS, Linux)
+- Mobile-friendly web interface
 
 ## Prerequisites
 
-- Modern web browser with WebRTC, WebSocket, and Web Audio API support
+- Node.js 18 or higher
+- Yarn package manager
 - Google AI Studio API key
-- `python -m http.server` or `npx http-server` or Live Server extension for VS Code (to host a server for index.html)
 
 ## Quick Start
 
@@ -31,19 +32,27 @@ This is a simplified version of [Google's original React implementation](https:/
 2. Clone the repository
 
    ```bash
-   git clone https://github.com/ViaAnthroposBenevolentia/gemini-2-live-api-demo.git
+   git clone https://github.com/ViaAnthroposBenevolentia/gemini-2-live-electron.git
    ```
 
-3. Start the development server (adjust port if needed):
+3. Install dependencies:
 
    ```bash
-   cd gemini-2-live-api-demo
-   python -m http.server 8000 # or npx http-server 8000 or Open with Live Server extension for VS Code
+   cd gemini-2-live-electron
+   yarn install
    ```
 
-4. Access the application at `http://localhost:8000`
+4. Start the application:
 
-5. Open the settings at the top right, paste your API key, and click "Save"
+   ```bash
+   yarn start
+   ```
+
+5. For production build:
+
+   ```bash
+   yarn build
+   ```
 
 ## Contributing
 
