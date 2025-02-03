@@ -50,12 +50,28 @@ export class ScreenManager {
         if (this.isInitialized) return;
 
         try {
-            // Request screen sharing
-            this.stream = await navigator.mediaDevices.getDisplayMedia({
+            // Get available screen sources using native desktopCapturer
+            const sources = await window.api.getScreenSources();
+            
+            // Default to the first screen source if available
+            const source = sources[0];
+            if (!source) {
+                throw new Error('No screen sources available');
+            }
+
+            // Request screen sharing using the source ID
+            this.stream = await navigator.mediaDevices.getUserMedia({
+                audio: false,
                 video: {
-                    cursor: "always"
-                },
-                audio: false
+                    mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: source.id,
+                        minWidth: 1280,
+                        maxWidth: 4096,
+                        minHeight: 720,
+                        maxHeight: 2160
+                    }
+                }
             });
 
             // Create and setup video element

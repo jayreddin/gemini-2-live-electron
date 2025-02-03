@@ -1,13 +1,10 @@
 /**
  * Client for interacting with the Gemini 2.0 Flash Multimodal Live API via WebSockets.
  * This class handles the connection, sending and receiving messages, and processing responses.
- * 
- * @extends EventEmitter
  */
-import { EventEmitter } from 'https://cdn.skypack.dev/eventemitter3';
 import { blobToJSON, base64ToArrayBuffer } from '../utils/utils.js';
 
-export class GeminiWebsocketClient extends EventEmitter {
+export class GeminiWebsocketClient {
     /**
      * Creates a new GeminiWebsocketClient with the given configuration.
      * @param {string} name - Name for the websocket client.
@@ -15,13 +12,39 @@ export class GeminiWebsocketClient extends EventEmitter {
      * @param {Object} config - Configuration object for the Gemini API.
      */
     constructor(name, url, config) {
-        super();
+        this._eventListeners = new Map();
         this.name = name || 'WebSocketClient';
         this.url = url || `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${apiKey}`;
         this.ws = null;
         this.config = config;
         this.isConnecting = false;
         this.connectionPromise = null;
+    }
+
+    /**
+     * Registers an event listener for the specified event
+     * @param {string} eventName - Name of the event to listen for
+     * @param {Function} callback - Function to call when the event occurs
+     */
+    on(eventName, callback) {
+        if (!this._eventListeners.has(eventName)) {
+            this._eventListeners.set(eventName, []);
+        }
+        this._eventListeners.get(eventName).push(callback);
+    }
+
+    /**
+     * Emits an event with the specified data
+     * @param {string} eventName - Name of the event to emit
+     * @param {any} data - Data to pass to the event listeners
+     */
+    emit(eventName, data) {
+        if (!this._eventListeners.has(eventName)) {
+            return;
+        }
+        for (const callback of this._eventListeners.get(eventName)) {
+            callback(data);
+        }
     }
 
     /**

@@ -1,0 +1,14 @@
+{
+  "name": "gemini-2-live-electron",
+  "version": "1.0.0",
+  "main": "server/main.js",
+  "author": "Open Source Community",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --debug"
+  },
+  "dependencies": {
+    "electron": "^34.0.2"
+  }
+}
