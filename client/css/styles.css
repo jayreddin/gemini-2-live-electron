@@ -11,6 +11,15 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Remove default mobile tap highlighting */
+}
+
+html {
+    /* Prevent overflow scrolling on iOS */
+    position: fixed;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
 }
 
 body {
@@ -18,8 +27,12 @@ body {
     color: var(--text-color);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     min-height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch; /* Better scrolling on iOS */
+    touch-action: manipulation; /* Disable double-tap to zoom */
 }
 
 .app-container {
@@ -29,47 +42,71 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
-.disconnect-btn {
+/* Power button (connect/disconnect) */
+.power-btn {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 10px 20px;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     background-color: var(--button-bg);
-    color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.disconnect-btn:hover {
-    background-color: var(--danger-color);
-    color: var(--text-color);
-}
-
-.connect-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 10px 20px;
-    background-color: var(--button-bg);
+    border: 2px solid var(--accent-color);
     color: var(--accent-color);
-    border: 1px solid var(--accent-color);
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: all 0.3s ease;
+    z-index: 10;
+    padding: 0;
 }
 
-.connect-btn:hover {
+/* Remove the before content since we're using SVG now */
+.power-btn::before {
+    content: "";
+    display: none;
+}
+
+.power-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.power-btn.connected {
     background-color: var(--accent-color);
-    color: var(--text-color);
 }
 
-.mic-btn {
+.power-btn.connected img {
+    filter: brightness(1.5);
+}
+
+.power-btn.disconnected {
+    background-color: var(--danger-color);
+}
+
+.power-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Bottom toolbar */
+.bottom-toolbar {
+    position: absolute;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    z-index: 10;
+}
+
+.bottom-toolbar button {
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -81,82 +118,45 @@ body {
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    z-index: 2;
-    position: absolute;
-    bottom: 22px;
-    right: 25px;
+    padding: 0;
 }
 
-.camera-btn,
-.screen-btn {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background-color: var(--button-bg);
-    border: 2px solid var(--accent-color);
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.3s ease;
-    z-index: 2;
-    position: absolute;
-    right: 25px;
+/* Add styling for SVG icons in toolbar buttons */
+.bottom-toolbar button img {
+    width: 20px;
+    height: 20px;
 }
 
-.camera-btn {
-    bottom: 142px;
-}
-
-.screen-btn {
-    bottom: 82px;
-}
-
-.camera-btn:hover,
-.screen-btn:hover {
+.bottom-toolbar button:hover {
     background-color: var(--button-hover);
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
-.camera-btn.active,
-.screen-btn.active {
+.bottom-toolbar button.active {
     background-color: var(--accent-color);
 }
 
-/* Media query for small devices */
-@media screen and (max-width: 350px) {
-    .mic-btn {
-        bottom: 80px;
-    }
-    
-    .camera-btn {
-        bottom: 200px;
-    }
-    
-    .screen-btn {
-        bottom: 140px;
-    }
+/* When button is active, make the icon brighter */
+.bottom-toolbar button.active img {
+    filter: brightness(1.5);
 }
 
-.mic-btn:hover {
-    background-color: var(--button-hover);
-    transform: scale(1.05);
-}
-
-.mic-btn.active {
-    background-color: var(--accent-color);
-}
-
-.mic-icon {
+/* Toggle button for output mode */
+.output-toggle-btn {
     font-size: 16px;
+}
+
+/* Hide old connect/disconnect buttons */
+.disconnect-btn,
+.connect-btn {
+    display: none;
 }
 
 .text-input-container {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 100px; /* Leave space for mic button */
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
     display: flex;
     gap: 10px;
     z-index: 2;
@@ -190,11 +190,20 @@ body {
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
+    padding: 0;
+}
+
+.send-btn img {
+    width: 20px;
+    height: 20px;
 }
 
 .send-btn:hover {
     background-color: var(--accent-color);
-    color: var(--text-color);
+}
+
+.send-btn:hover img {
+    filter: brightness(1.5);
 }
 
 .visualizer {
@@ -208,54 +217,48 @@ body {
 
 .camera-preview {
     position: absolute;
-    bottom: 100px;
-    left: 20px;
+    bottom: 150px;
+    right: 20px;
     width: 240px; /* Default width */
     height: 180px;
     background-color: var(--button-bg);
-    border: 1px solid var(--accent-color);
+    border: 2px solid var(--accent-color);
     border-radius: 8px;
     overflow: hidden;
-    z-index: 2;
+    z-index: 100; /* Increased z-index for better visibility */
     display: none; /* Hidden by default */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s ease;
 }
 
 .camera-preview video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    background-color: #000;
 }
 
 .screen-preview {
     position: absolute;
-    bottom: 300px;
+    bottom: 150px;
     left: 20px;
     width: 240px;
     height: 135px; /* 16:9 aspect ratio */
     background-color: var(--button-bg);
-    border: 1px solid var(--accent-color);
+    border: 2px solid var(--accent-color);
     border-radius: 8px;
     overflow: hidden;
-    z-index: 2;
+    z-index: 100; /* Increased z-index for better visibility */
     display: none; /* Hidden by default */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s ease;
 }
 
 .screen-preview video {
     width: 100%;
     height: 100%;
     object-fit: contain; /* Maintain aspect ratio without cropping */
-}
-
-/* Media query for devices with width less than 340px */
-@media (max-width: 340px) {
-    .camera-preview {
-        width: 180px;
-        right: 25px;
-    }
-    .screen-preview {
-        width: 180px;
-        height: 101px; /* Maintain 16:9 aspect ratio */
-    }
+    background-color: #000;
 }
 
 .camera-switch-btn {
@@ -281,30 +284,11 @@ body {
     background: rgba(0, 0, 0, 0.7);
 }
 
-/* Hide on desktop */
-@media (hover: hover) and (pointer: fine) {
+/* Show camera switch button on mobile */
+@media (hover: none) and (pointer: coarse) {
     .camera-switch-btn {
-        display: none;
+        display: flex;
     }
-}
-
-.settings-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    background-color: var(--button-bg);
-    color: var(--text-color);
-    border: 1px solid var(--accent-color);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 20px;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.settings-btn:hover {
-    background-color: var(--button-hover);
 }
 
 .settings-dialog {
@@ -398,10 +382,10 @@ body {
 
 .chat-history {
     position: absolute;
-    top: 60px;
-    left: 20px;
-    right: 20px;
-    bottom: 120px;
+    top: 70px;
+    left: 15px;
+    right: 15px;
+    bottom: 130px;
     background: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     padding: 15px;
@@ -444,4 +428,98 @@ body {
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
+}
+
+/* Resize handle for draggable/resizable previews */
+.resize-handle {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    right: 2px;
+    bottom: 2px;
+    background: var(--accent-color);
+    cursor: se-resize;
+    z-index: 10;
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+.resize-handle:hover {
+    opacity: 1;
+}
+
+/* Media queries for different screen sizes */
+/* Small phones */
+@media (max-width: 370px) {
+    .bottom-toolbar {
+        gap: 8px;
+    }
+    
+    .bottom-toolbar button {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .camera-preview, .screen-preview {
+        width: 180px;
+    }
+    
+    .camera-preview {
+        height: 135px;
+    }
+    
+    .screen-preview {
+        height: 101px;
+    }
+    
+    .power-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    .app-container {
+        height: -webkit-fill-available;
+    }
+    
+    .text-input-container, .bottom-toolbar {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+}
+
+/* Fix for notched phones */
+@supports (padding: max(0px)) {
+    .power-btn {
+        top: max(10px, env(safe-area-inset-top));
+        left: max(10px, env(safe-area-inset-left));
+    }
+    
+    .text-input-container {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .chat-history {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+/* Adjust for landscape orientation on mobile */
+@media (orientation: landscape) and (max-height: 500px) {
+    .chat-history {
+        top: 50px;
+        bottom: 110px;
+    }
+    
+    .bottom-toolbar {
+        bottom: 60px;
+    }
+    
+    .text-input-container {
+        bottom: 10px;
+    }
 }

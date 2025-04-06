@@ -164,25 +164,13 @@ export class GeminiAgent{
             
             // Set up interval to capture and send images
             this.cameraInterval = setInterval(async () => {
-                // Check if we're still connected before sending
-                if (this.connected && this.client && this.client.ws && 
-                    this.client.ws.readyState === WebSocket.OPEN) {
-                    try {
-                        const imageBase64 = await this.cameraManager.capture();
-                        this.client.sendImage(imageBase64);
-                    } catch (error) {
-                        console.warn('Error capturing or sending camera image:', error);
-                    }
-                } else {
-                    // WebSocket is not open, stop the camera capture
-                    console.warn('WebSocket is not connected. Stopping camera capture.');
-                    this.stopCameraCapture();
-                }
+                const imageBase64 = await this.cameraManager.capture();
+                this.client.sendImage(imageBase64);                
             }, this.captureInterval);
             
             console.info('Camera capture started');
         } catch (error) {
-            await this.stopCameraCapture();
+            await this.disconnect();
             throw new Error('Failed to start camera capture: ' + error);
         }
     }

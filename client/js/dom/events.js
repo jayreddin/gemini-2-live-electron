@@ -39,24 +39,22 @@ const ensureAgentReady = async (agent) => {
  * @param {GeminiAgent} agent - The main application agent instance
  */
 export function setupEventListeners(agent) {
-    // Disconnect handler
-    elements.disconnectBtn.addEventListener('click', async () => {
+    // Power button connect/disconnect toggle
+    elements.powerBtn.addEventListener('click', async () => {
         try {
-            await agent.disconnect();
-            showConnectButton();
+            if (agent.connected) {
+                await agent.disconnect();
+                elements.powerBtn.classList.remove('connected');
+                elements.powerBtn.classList.add('disconnected');
+            } else {
+                await ensureAgentReady(agent);
+                elements.powerBtn.classList.remove('disconnected');
+                elements.powerBtn.classList.add('connected');
+            }
             [elements.cameraBtn, elements.screenBtn, elements.micBtn].forEach(btn => btn.classList.remove('active'));
             isCameraActive = false;
         } catch (error) {
-            console.error('Error disconnecting:', error);
-        }
-    });
-
-    // Connect handler
-    elements.connectBtn.addEventListener('click', async () => {
-        try {
-            await ensureAgentReady(agent);
-        } catch (error) {
-            console.error('Error connecting:', error);
+            console.error('Error toggling connection:', error);
         }
     });
 
@@ -76,7 +74,6 @@ export function setupEventListeners(agent) {
     elements.cameraBtn.addEventListener('click', async () => {
         try {
             await ensureAgentReady(agent);
-            
             if (!isCameraActive) {
                 await agent.startCameraCapture();
                 elements.cameraBtn.classList.add('active');
@@ -94,8 +91,7 @@ export function setupEventListeners(agent) {
 
     // Screen sharing handler
     let isScreenShareActive = false;
-    
-    // Listen for screen share stopped events (from native browser controls)
+
     agent.on('screenshare_stopped', () => {
         elements.screenBtn.classList.remove('active');
         isScreenShareActive = false;
@@ -105,7 +101,6 @@ export function setupEventListeners(agent) {
     elements.screenBtn.addEventListener('click', async () => {
         try {
             await ensureAgentReady(agent);
-            
             if (!isScreenShareActive) {
                 await agent.startScreenShare();
                 elements.screenBtn.classList.add('active');
@@ -119,6 +114,27 @@ export function setupEventListeners(agent) {
             elements.screenBtn.classList.remove('active');
             isScreenShareActive = false;
         }
+    });
+
+    // Toggle output mode (text/audio)
+    let outputMode = localStorage.getItem('outputMode') || 'text';
+    const updateOutputToggleIcon = () => {
+        // Update the button with the appropriate SVG icon based on current mode
+        if (outputMode === 'text') {
+            elements.outputToggleBtn.innerHTML = '<img src="assets/icons/output-text.svg" alt="Text Mode">';
+            elements.outputToggleBtn.title = 'Text Replies (Click for Audio)';
+        } else {
+            elements.outputToggleBtn.innerHTML = '<img src="assets/icons/output-audio.svg" alt="Audio Mode">';
+            elements.outputToggleBtn.title = 'Audio Replies (Click for Text)';
+        }
+    };
+    updateOutputToggleIcon();
+
+    elements.outputToggleBtn.addEventListener('click', () => {
+        outputMode = outputMode === 'text' ? 'audio' : 'text';
+        localStorage.setItem('outputMode', outputMode);
+        updateOutputToggleIcon();
+        console.info('Switched output mode to', outputMode);
     });
 
     // Message sending handlers

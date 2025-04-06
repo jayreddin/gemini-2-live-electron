@@ -7,6 +7,8 @@ const elements = {
     cameraBtn: document.getElementById('cameraBtn'),
     screenBtn: document.getElementById('screenBtn'),
     settingsBtn: document.getElementById('settingsBtn'),
+    powerBtn: document.getElementById('powerBtn'),
+    outputToggleBtn: document.getElementById('outputToggleBtn'),
 
     // Preview elements
     cameraPreview: document.getElementById('cameraPreview'),

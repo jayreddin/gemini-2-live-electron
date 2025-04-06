@@ -1,6 +1,9 @@
 /**
  * Manages camera access, capture, and image processing
  */
+import elements from '../dom/elements.js';
+import { makeDraggableAndResizable } from '../utils/drag-resize.js';
+
 export class CameraManager {
     /**
      * @param {Object} config
@@ -116,7 +119,13 @@ export class CameraManager {
             }
 
             // Request camera access
-            this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (permissionError) {
+                console.error('Camera permission denied:', permissionError);
+                alert('Camera access was denied. Please allow camera access and try again.');
+                throw new Error('Camera permission denied: ' + permissionError.message);
+            }
 
             // Create and setup video element
             this.videoElement = document.createElement('video');
@@ -126,10 +135,12 @@ export class CameraManager {
             // Add video to preview container
             const previewContainer = document.getElementById('cameraPreview');
             if (previewContainer) {
+                previewContainer.innerHTML = ''; // Clear existing content first
                 previewContainer.appendChild(this.videoElement);
                 this.previewContainer = previewContainer;
                 this._createSwitchButton(); // Add switch button
                 this.showPreview(); // Show preview when initialized
+                makeDraggableAndResizable(this.previewContainer);
             }
             
             await this.videoElement.play();
@@ -151,6 +162,11 @@ export class CameraManager {
 
             this.isInitialized = true;
         } catch (error) {
+            // Make sure we clean up resources on error
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+                this.stream = null;
+            }
             throw new Error(`Failed to initialize camera: ${error.message}`);
         }
     }
