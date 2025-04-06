@@ -6,7 +6,7 @@ This started as a simplified version of [Google's original React implementation]
 
 ## Live Demo on GitHub Pages
 
-[Live Demo]([https://viaanthroposbenevolentia.github.io/gemini-2-live-api-demo/](https://jayreddin.github.io/gemini-2-live-electron/client/index.html))
+[Live Demo](https://jayreddin.github.io/gemini-2-live-electron/client/index.html)
 
 ## Key Features
 
